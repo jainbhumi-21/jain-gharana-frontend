@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Checkout | Jain Gharana</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <div id="navbar"></div>
+  <script src="js/loadNavbar.js"></script>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-left">
+      <h1>🌶 Jain Gharana</h1>
+      <p>Checkout</p>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="cart.html">← Back to Cart</a>
+    </div>
+  </header>
+
+  <!-- ===== CHECKOUT SECTION ===== -->
+  <section class="checkout">
+    <h2>Delivery Details</h2>
+
+    <!-- 🔥 FORM -->
+    <form id="checkoutForm" class="checkout-form">
+
+      <input type="text" id="name" placeholder="Full Name" required />
+
+      <input type="text" id="phone" placeholder="Phone Number" required />
+
+      <textarea
+        id="address"
+        placeholder="House No, Area, City, State, Pincode"
+        rows="4"
+        required
+      ></textarea>
+
+      <!-- PAYMENT METHOD -->
+      <select id="paymentMethod" required>
+        <option value="COD">Cash on Delivery (+₹50)</option>
+        <option value="ONLINE">Online Payment</option>
+      </select>
+
+      <!-- PLACE ORDER / PAY BUTTON -->
+      <button type="submit" id="pay-btn" class="btn">
+        Place Order
+      </button>
+
+    </form>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>© 2025 Jain Gharana. All rights reserved.</p>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <!-- Razorpay SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Checkout Logic (COD + ONLINE decision) -->
+  <script src="js/checkout.js"></script>
+
+  <!-- Razorpay Payment Logic -->
+  <script src="js/razorpay.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login | Jain Gharana</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body {
+      background: url("images/spicesbackgroundheader.jpg") center/cover no-repeat;
+      min-height: 100vh;
+    }
+
+    .login-overlay {
+      min-height: 100vh;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: #fff;
+      width: 360px;
+      padding: 35px 30px;
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      animation: fadeUp 0.8s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-card h1 {
+      color: #8b2c1f;
+      margin-bottom: 6px;
+    }
+
+    .login-card p {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 25px;
+    }
+
+    .login-card input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    .login-card button {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .otp-box {
+      display: none;
+    }
+
+    .login-footer {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="login-overlay">
+  <div class="login-card">
+
+    <h1>🌶 Jain Gharana</h1>
+    <p>Login with your phone number</p>
+
+    <!-- PHONE -->
+    <input
+      type="text"
+      id="phone"
+      placeholder="Enter Phone Number"
+    />
+
+    <button class="btn" onclick="sendOTP()">
+      Send OTP
+    </button>
+
+    <!-- OTP SECTION -->
+    <div class="otp-box" id="otpBox">
+      <input
+        type="text"
+        id="otp"
+        placeholder="Enter OTP"
+      />
+
+      <button class="btn" onclick="verifyOTP()">
+        Verify & Login
+      </button>
+    </div>
+
+    <div class="login-footer">
+      Pure & Authentic Spices 🌿
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let generatedOTP = "";
+
+  function sendOTP() {
+    const phone = document.getElementById("phone").value.trim();
+
+    if (!phone || phone.length < 10) {
+      alert("Enter valid phone number");
+      return;
+    }
+
+    // 🔥 Dummy OTP generation
+    generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+
+    console.log("OTP (for testing):", generatedOTP);
+    alert("OTP sent (check console for now)");
+
+    document.getElementById("otpBox").style.display = "block";
+  }
+
+  function verifyOTP() {
+    const otp = document.getElementById("otp").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    if (otp !== generatedOTP) {
+      alert("Invalid OTP ❌");
+      return;
+    }
+
+    localStorage.setItem("userPhone", phone);
+    alert("Login successful ✅");
+    window.location.href = "products.html";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Orders | Jain Gharana</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    .orders-box {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .order-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 25px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+    }
+
+    .order-card h4 {
+      color: #8b2c1f;
+      margin-bottom: 6px;
+    }
+
+    .order-items {
+      margin-top: 12px;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .status {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .status.Pending { color: #e67e22; }
+    .status.Packed { color: #3498db; }
+    .status.Shipped { color: #8e44ad; }
+    .status.Out-for-Delivery { color: #16a085; }
+    .status.Delivered { color: green; }
+    .status.Cancelled { color: red; }
+
+    /* ===== TIMELINE ===== */
+    .timeline {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      position: relative;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 18px;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: #ddd;
+    }
+
+    .step {
+      position: relative;
+      text-align: center;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    .step span {
+      display: block;
+      width: 16px;
+      height: 16px;
+      background: #ccc;
+      border-radius: 50%;
+      margin: auto;
+    }
+
+    .step.active span {
+      background: #c0392b;
+    }
+
+    .step.active p {
+      color: #c0392b;
+      font-weight: 600;
+    }
+
+    .cancel-btn {
+      margin-top: 12px;
+      background: crimson;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <h1>🌶 Jain Gharana</h1>
+    <p>My Orders</p>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="products.html">Shop</a>
+    <a href="cart.html">Cart 🛒</a>
+  </div>
+</header>
+
+<section>
+  <div class="orders-box">
+
+    <h2>Track Your Orders</h2>
+
+    <input
+      type="text"
+      id="phone"
+      placeholder="Enter your phone number"
+      style="width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #ccc;"
+    />
+
+    <button class="btn" onclick="loadOrders()">View Orders</button>
+
+    <div id="ordersContainer" style="margin-top:30px;"></div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© 2025 Jain Gharana. All rights reserved.</p>
+</footer>
+<script>
+  /* =========================
+     ORDER TRACKING STEPS
+  ========================= */
+  const steps = [
+    "Pending",
+    "Packed",
+    "Shipped",
+    "Out-for-Delivery",
+    "Delivered"
+  ];
+
+  /* =========================
+     LOAD ORDERS
+  ========================= */
+  async function loadOrders() {
+    const phone = document.getElementById("phone").value.trim();
+    const container = document.getElementById("ordersContainer");
+
+    if (!phone) {
+      alert("Please enter phone number");
+      return;
+    }
+
+    container.innerHTML = "<p>Loading orders...</p>";
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/orders?phone=${phone}`
+      );
+      const data = await res.json();
+
+      if (!data.success || !data.orders.length) {
+        container.innerHTML = "<p>No orders found 📦</p>";
+        return;
+      }
+
+      container.innerHTML = "";
+
+      data.orders.forEach(order => {
+        let itemsHtml = "";
+
+        order.items.forEach(i => {
+          itemsHtml += `
+            <div class="order-item">
+              <span>${i.name} (${i.weight}g × ${i.qty})</span>
+              <span>₹${i.price * i.qty}</span>
+            </div>
+          `;
+        });
+
+        container.innerHTML += `
+          <div class="order-card">
+            <h4>Order ID: ${order._id}</h4>
+            <p>Date: ${new Date(order.createdAt).toLocaleString()}</p>
+
+            <div class="order-items">
+              ${itemsHtml}
+            </div>
+
+            <p><strong>Total:</strong> ₹${order.total}</p>
+
+            <p class="status ${order.shippingStatus}">
+              Status: ${order.shippingStatus.replaceAll("-", " ")}
+            </p>
+
+            ${renderTimeline(order.shippingStatus)}
+
+            ${
+              order.shippingStatus === "Pending"
+                ? `<button class="cancel-btn" onclick="cancelOrder('${order._id}')">
+                    Cancel Order
+                  </button>`
+                : ""
+            }
+          </div>
+        `;
+      });
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = "<p>Error loading orders ❌</p>";
+    }
+  }
+
+  /* =========================
+     RENDER TIMELINE
+  ========================= */
+  function renderTimeline(status) {
+    if (status === "Cancelled") {
+      return `<p class="status Cancelled">❌ Order Cancelled</p>`;
+    }
+
+    let html = `<div class="timeline">`;
+
+    steps.forEach(step => {
+      const active =
+        steps.indexOf(step) <= steps.indexOf(status);
+
+      html += `
+        <div class="step ${active ? "active" : ""}">
+          <span></span>
+          <p>${step.replaceAll("-", " ")}</p>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  /* =========================
+     CANCEL ORDER
+  ========================= */
+  async function cancelOrder(id) {
+    if (!confirm("Cancel this order?")) return;
+
+    await fetch(
+      `http://localhost:5000/api/orders/${id}/status`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shippingStatus: "Cancelled" })
+      }
+    );
+
+    loadOrders();
+  }
+</script>
+
+</body>
+</html>

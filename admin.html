@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard | Jain Gharana</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    .admin-box {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    th {
+      background: #8b2c1f;
+      color: #fff;
+    }
+
+    select {
+      padding: 6px;
+      border-radius: 6px;
+    }
+
+    .status.Pending { color: #e67e22; font-weight: bold; }
+    .status.Packed { color: #2980b9; font-weight: bold; }
+    .status.Shipped { color: #8e44ad; font-weight: bold; }
+    .status.Out-for-Delivery { color: #d35400; font-weight: bold; }
+    .status.Delivered { color: green; font-weight: bold; }
+    .status.Cancelled { color: red; font-weight: bold; }
+  </style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <h1>🛠 Admin Dashboard</h1>
+    <p>Manage Orders – Jain Gharana</p>
+  </div>
+</header>
+
+<section>
+  <div class="admin-box">
+    <h2>All Orders</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Items</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+
+      <tbody id="ordersTable">
+        <tr>
+          <td colspan="6">Loading orders...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© 2025 Jain Gharana Admin</p>
+</footer>
+
+<script src="js/admin.js"></script>
+
+</body>
+</html>

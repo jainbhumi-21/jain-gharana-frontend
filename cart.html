@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cart | Jain Gharana</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-left">
+      <h1>🌶 Jain Gharana</h1>
+      <p>Your Shopping Cart</p>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="products.html">← Continue Shopping</a>
+    </div>
+  </header>
+
+  <!-- ===== CART SECTION ===== -->
+  <section class="cart">
+    <h2>Your Cart</h2>
+
+    <!-- 🔥 CART ITEMS CONTAINER -->
+    <div id="cartItems" class="cart-items"></div>
+
+    <!-- 🔥 TOTAL -->
+    <h3 class="cart-total">
+      Total: ₹<span id="cartTotal">0</span>
+    </h3>
+
+    <!-- 🔥 CHECKOUT -->
+    <button onclick="goToCheckout()" class="btn">
+      Proceed to Checkout
+    </button>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>© 2025 Jain Gharana. All rights reserved.</p>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script src="js/cart.js"></script>
+
+  <script>
+    function goToCheckout() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      if (!cart.length) {
+        alert("Your cart is empty 🛒");
+        return;
+      }
+      window.location.href = "checkout.html";
+    }
+  </script>
+
+</body>
+</html>
