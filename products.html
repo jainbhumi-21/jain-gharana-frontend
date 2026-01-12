@@ -40,28 +40,42 @@
 
 <!-- ===== SCRIPTS ===== -->
 <script src="js/cart.js"></script>
+
 <script>
 async function loadProducts() {
   try {
-    const res = await fetch("http://localhost:5000/api/products");
-    const data = await res.json();
-
-    // ✅ HANDLE API SHAPE
-    const products = data.products;
+    // ⚠️ BACKEND NOT DEPLOYED → TEMP STATIC DATA
+    const products = [
+      {
+        _id: "1",
+        name: "Red Chilli Powder",
+        price: 80,
+        image: "red-chilli.jpg"
+      },
+      {
+        _id: "2",
+        name: "Turmeric Powder",
+        price: 60,
+        image: "turmeric.jpg"
+      },
+      {
+        _id: "3",
+        name: "Coriander Powder",
+        price: 70,
+        image: "coriander.jpg"
+      }
+    ];
 
     const list = document.getElementById("productList");
     list.innerHTML = "";
 
-    if (!products || !products.length) {
-      list.innerHTML = "<p>No products available</p>";
-      return;
-    }
-
     products.forEach(product => {
       list.innerHTML += `
         <div class="product-card">
+
+          <!-- ✅ IMAGE PATH FIXED FOR GITHUB PAGES -->
           <img 
-            src="./images/${product.image}" 
+            src="/jain-gharana-frontend/images/${product.image}" 
             alt="${product.name}"
             style="width:100%; height:180px; object-fit:contain; margin-bottom:10px;"
           />
@@ -96,12 +110,13 @@ async function loadProducts() {
           })">
             Add to Cart
           </button>
+
         </div>
       `;
     });
 
   } catch (err) {
-    console.error("Product load error:", err);
+    console.error(err);
     document.getElementById("productList").innerHTML =
       "<p>Error loading products</p>";
   }
