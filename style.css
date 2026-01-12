@@ -1,272 +1,132 @@
-/* ================= RESET ================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", sans-serif;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Products | Jain Gharana</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-/* ================= BODY ================= */
-body {
-  color: #333;
-  min-height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
 
-/* ================= NAVBAR ================= */
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 2000;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 45px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
-}
+<!-- ===== HEADER ===== -->
+<header class="header">
+  <div class="header-left">
+    <h1>🌶 Jain Gharana</h1>
+    <p>Pure & Authentic Spices & Seeds</p>
+  </div>
 
-.nav-logo a {
-  font-size: 24px;
-  font-weight: 700;
-  text-decoration: none;
-  color: #8b2c1f;
-  letter-spacing: 1px;
-}
+  <div class="nav-buttons">
+    <a href="index.html">Home</a>
+    <a href="my-orders.html">My Orders</a>
+    <a href="cart.html">Cart 🛒 <span id="cartCount">0</span></a>
+  </div>
+</header>
 
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 28px;
-}
+<!-- ===== PRODUCTS SECTION ===== -->
+<section class="products">
+  <h2>Our Products</h2>
 
-.nav-links a {
-  text-decoration: none;
-  font-weight: 600;
-  color: #333;
-  transition: 0.3s ease;
-}
+  <div id="productList" class="product-list">
+    <p>Loading products...</p>
+  </div>
+</section>
 
-.nav-links a:hover {
-  color: #c0392b;
-}
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <p>© 2025 Jain Gharana. All rights reserved.</p>
+</footer>
 
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
+<!-- ===== SCRIPTS ===== -->
+<script src="js/cart.js"></script>
 
-.cart-btn {
-  text-decoration: none;
-  font-size: 16px;
-  color: #333;
-  font-weight: 600;
-}
+<script>
+async function loadProducts() {
+  try {
+    // ⚠️ NOTE:
+    // GitHub Pages pe backend localhost nahi chalega
+    // Abhi demo ke liye data load ho raha hai locally
+    const res = await fetch("http://localhost:5000/api/products");
+    const data = await res.json();
 
-#cart-count {
-  background: #c0392b;
-  color: #fff;
-  border-radius: 50%;
-  padding: 2px 7px;
-  font-size: 12px;
-  margin-left: 4px;
-}
+    const products = data.products;
+    const list = document.getElementById("productList");
+    list.innerHTML = "";
 
-.login-btn {
-  background: #c0392b;
-  color: #fff;
-  padding: 8px 18px;
-  border-radius: 22px;
-  text-decoration: none;
-  font-size: 14px;
-  transition: 0.3s ease;
-}
+    if (!products || !products.length) {
+      list.innerHTML = "<p>No products available</p>";
+      return;
+    }
 
-.login-btn:hover {
-  background: #e74c3c;
-  transform: translateY(-2px);
-}
+    products.forEach(product => {
+      list.innerHTML += `
+        <div class="product-card">
 
-/* ================= HEADER ================= */
-.header {
-  position: relative;
-  background: url("../images/spicesbackgroundheader.jpg") center/cover no-repeat;
-  color: #fff;
-  padding: 25px 35px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  overflow: hidden;
-}
+          <!-- ✅ IMAGE PATH FIXED FOR GITHUB PAGES -->
+          <img
+            src="/jain-gharana-frontend/${product.image}"
+            alt="${product.name}"
+          />
 
-.header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(70, 30, 15, 0.78);
-  z-index: 0;
-}
+          <h3>${product.name}</h3>
 
-.header-left,
-.nav-buttons {
-  position: relative;
-  z-index: 1;
-}
+          <p>
+            ₹<span id="price-${product._id}">${product.price}</span>
+            <small>(100g)</small>
+          </p>
 
-.header h1 {
-  font-size: 30px;
-  letter-spacing: 1px;
-}
+          <select
+            id="weight-${product._id}"
+            onchange="updatePrice('${product._id}', ${product.price})"
+          >
+            <option value="100">100g</option>
+            <option value="250">250g</option>
+            <option value="500">500g</option>
+          </select>
 
-.header p {
-  font-size: 14px;
-  opacity: 0.95;
-}
+          <div class="qty-box">
+            <button onclick="changeQty('${product._id}', -1)">−</button>
+            <span id="qty-${product._id}">1</span>
+            <button onclick="changeQty('${product._id}', 1)">+</button>
+          </div>
 
-.nav-buttons a {
-  color: #fff;
-  text-decoration: none;
-  margin-left: 12px;
-  padding: 10px 18px;
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.18);
-  transition: 0.3s ease;
-}
+          <button onclick="addToCart({
+            _id: '${product._id}',
+            name: '${product.name}',
+            image: '${product.image}',
+            price: ${product.price}
+          })">
+            Add to Cart
+          </button>
+        </div>
+      `;
+    });
 
-.nav-buttons a:hover {
-  background: rgba(255, 255, 255, 0.35);
-  transform: translateY(-1px);
-}
-
-/* ================= HERO ================= */
-.hero {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.hero-overlay {
-  background: rgba(60, 30, 15, 0.7);
-  padding: 70px 55px;
-  border-radius: 28px;
-  text-align: center;
-  color: #fff;
-}
-
-.hero-overlay h1 {
-  font-size: 3.4rem;
-  letter-spacing: 3px;
-  margin-bottom: 15px;
-}
-
-.hero-overlay p {
-  font-size: 1.2rem;
-  margin-bottom: 45px;
-}
-
-/* ================= BUTTONS ================= */
-.btn,
-.shop-btn {
-  background: #c0392b;
-  color: #fff;
-  border: none;
-  padding: 14px 40px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 16px;
-  text-decoration: none;
-  transition: 0.3s ease;
-}
-
-.btn:hover,
-.shop-btn:hover {
-  background: #e74c3c;
-  transform: translateY(-3px);
-}
-
-/* ================= SECTIONS ================= */
-section {
-  padding: 55px 25px;
-}
-
-h2 {
-  margin-bottom: 30px;
-  text-align: center;
-  color: #8b2c1f;
-}
-
-/* ================= FEATURES ================= */
-.features {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  background: #fff7f0;
-  padding: 55px 20px;
-}
-
-.feature-card {
-  background: #fff;
-  padding: 28px 38px;
-  border-radius: 20px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.1);
-  font-weight: 600;
-  font-size: 16px;
-}
-
-/* ================= PRODUCTS ================= */
-.product-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 35px;
-}
-
-.product-card {
-  background: #fff;
-  border-radius: 22px;
-  padding: 22px;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: 0.3s ease;
-}
-
-.product-card:hover {
-  transform: translateY(-8px);
-}
-
-.product-card img {
-  width: 100%;
-  height: 180px;
-  object-fit: contain;
-  margin-bottom: 15px;
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
-
-  .navbar {
-    padding: 12px 20px;
+  } catch (err) {
+    console.error("Product load error:", err);
+    document.getElementById("productList").innerHTML =
+      "<p>Error loading products</p>";
   }
 }
 
-@media (max-width: 600px) {
-  .header {
-    text-align: center;
-  }
-
-  .nav-buttons {
-    margin-top: 12px;
-  }
-
-  .hero-overlay h1 {
-    font-size: 2.4rem;
-  }
+/* PRICE UPDATE */
+function updatePrice(id, basePrice) {
+  const weight = document.getElementById(`weight-${id}`).value;
+  document.getElementById(`price-${id}`).innerText =
+    (basePrice * weight) / 100;
 }
+
+/* QTY CONTROLS */
+function changeQty(id, delta) {
+  const qtyEl = document.getElementById(`qty-${id}`);
+  let qty = Number(qtyEl.innerText) + delta;
+  if (qty < 1) qty = 1;
+  qtyEl.innerText = qty;
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>
